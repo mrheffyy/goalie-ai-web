@@ -34,7 +34,7 @@ export default function Header({ showMenu = true }) {
           </Link>
 
           {showMenu && (
-            <nav style={{ display: 'flex', gap: '32px', display: 'none' }}>
+            <nav style={{ display: 'flex', gap: '32px' }}>
               <Link href="/analyze" style={{ color: 'var(--slate-300)', fontSize: '14px', fontWeight: '500' }}>Analyze</Link>
               {user && <Link href="/dashboard" style={{ color: 'var(--slate-300)', fontSize: '14px', fontWeight: '500' }}>Dashboard</Link>}
             </nav>
