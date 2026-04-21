@@ -1,0 +1,29 @@
+# Python Analyzer Dockerfile
+FROM python:3.11-slim
+
+# Install OpenCV system deps + ffmpeg
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python ML deps
+RUN pip install --no-cache-dir \
+    opencv-python==4.8.1.78 \
+    mediapipe==0.10.9 \
+    numpy==1.26.2
+
+WORKDIR /app
+
+# Copy analyzer code
+COPY goalie-ai/analyzer.py /app/
+
+# Create data directories
+RUN mkdir -p /data/input /data/output
+
+CMD ["python3", "-c", "print('Analyzer ready')"]
