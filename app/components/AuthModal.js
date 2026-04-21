@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useRouter } from 'next/navigation'
 import { X, Mail, Lock, User } from 'lucide-react'
 
 export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
@@ -10,6 +11,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login, signup } = useAuth()
+  const router = useRouter()
 
   if (!isOpen) return null
 
@@ -26,6 +28,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }) {
 
     if (result.success) {
       onClose()
+      router.push('/dashboard')
     } else {
       setError(result.error)
     }
