@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import { AuthProvider, useAuth } from '../context/AuthContext'
 import Header from '../components/Header'
 import { 
@@ -386,7 +387,9 @@ function DashboardContent() {
 export default function Dashboard() {
   return (
     <AuthProvider>
-      <DashboardContent />
+      <Suspense fallback={<div style={{ padding: "40px", textAlign: "center" }}>Loading...</div>}>
+        <DashboardContent />
+      </Suspense>
     </AuthProvider>
   )
 }
