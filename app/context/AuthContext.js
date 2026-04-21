@@ -52,11 +52,11 @@ export function AuthProvider({ children }) {
     return { success: false, error: data.error }
   }
 
-  async function signup(email, password) {
+  async function signup(email, password, profile = {}) {
     const res = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+      body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&name=${encodeURIComponent(profile.name || '')}&age=${encodeURIComponent(profile.age || '')}&hockey_level=${encodeURIComponent(profile.hockeyLevel || '')}&team=${encodeURIComponent(profile.team || '')}`
     })
     const data = await res.json()
     
