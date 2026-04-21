@@ -24,7 +24,7 @@ function Hero() {
           Get instant feedback on stance, angles, and save selection.
         </p>
         
-        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
           <Link href="/analyze" className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '16px' }}>
             <Upload size={18} />
             Analyze Your Clip
@@ -32,8 +32,14 @@ function Hero() {
           <Link href="/dashboard" className="btn btn-outline" style={{ padding: '16px 32px', fontSize: '16px' }}>
             View Demo
           </Link>
-          <Link href="/dashboard" className="btn btn-outline" style={{ padding: '16px 32px', fontSize: '16px', borderColor: '#8b5cf6', color: '#8b5cf6' }}>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <Link href="/dashboard" className="btn btn-outline" style={{ padding: '12px 24px', fontSize: '14px', borderColor: '#8b5cf6', color: '#8b5cf6' }}>
             Sign Up Free
+          </Link>
+          <Link href="/dashboard" className="btn btn-outline" style={{ padding: '12px 24px', fontSize: '14px' }}>
+            Log In
           </Link>
         </div>
       </div>
