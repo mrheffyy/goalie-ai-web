@@ -1,7 +1,9 @@
 "use client"
-import { useState } from 'react'
-import { Upload, Check, X, Play, Video, ArrowRight } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Upload, Check, X, Play, Video, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://goalie-ai-backend.onrender.com'
 
 function Header() {
   return (
@@ -28,41 +30,66 @@ export default function UploadPage() {
   const [progress, setProgress] = useState(0)
   const [complete, setComplete] = useState(false)
   
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const f = e.target.files[0]
     if (f) {
       setFile(f)
-      simulateUpload()
+      await uploadVideo(f)
     }
   }
   
-  const simulateUpload = () => {
+  const uploadVideo = async (videoFile) => {
     setUploading(true)
     let p = 0
     const interval = setInterval(() => {
-      p += 10
+      p += 20
       setProgress(p)
-      if (p >= 100) {
-        clearInterval(interval)
-        setUploading(false)
-        simulateAnalysis()
-      }
+      if (p >= 100) clearInterval(interval)
     }, 150)
+    
+    try {
+      // Get auth token from localStorage
+      const token = localStorage.getItem('goalieai_token')
+      
+      const formData = new FormData()
+      formData.append('video', videoFile)
+      
+      const response = await fetch(`${API_URL}/analyses/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': f`Bearer ${token}`
+        },
+        body: formData
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        setUploading(false)
+        setProgress(100)
+        setAnalyzing(true)
+        
+        // Store analysis result
+        localStorage.setItem('last_analysis', JSON.stringify(result))
+        
+        // Simulate final processing
+        setTimeout(() => {
+          setAnalyzing(false)
+          setComplete(true)
+        }, 2000)
+      } else {
+        const error = await response.json()
+        alert('Upload failed: ' + (error.error || 'Unknown error'))
+        setUploading(false)
+        setProgress(0)
+      }
+    } catch (err) {
+      console.error('Upload error:', err)
+      alert('Upload failed. Please try again.')
+      setUploading(false)
+      setProgress(0)
+    }
   }
   
-  const simulateAnalysis = () => {
-    setAnalyzing(true)
-    let p = 0
-    const interval = setInterval(() => {
-      p += 5
-      setProgress(p)
-      if (p >= 100) {
-        clearInterval(interval)
-        setAnalyzing(false)
-        setComplete(true)
-      }
-    }, 200)
-  }
   
   const reset = () => {
     setFile(null)
