@@ -10,6 +10,28 @@ function ResultsContent() {
   const [result, setResult] = useState(null)
 
   useEffect(() => {
+    // Check new format first (from upload flow)
+    const lastAnalysis = localStorage.getItem('last_analysis')
+    if (lastAnalysis) {
+      const parsed = JSON.parse(lastAnalysis)
+      setResult({
+        result: {
+          overall_score: parsed.deep_analysis?.goalie_analysis?.square_to_puck?.score * 10 || 70,
+          criteria_scores: [],
+          strengths: parsed.deep_analysis?.skill_development_focus?.split('.') || [],
+          improvements: [],
+          drill_recommendations: [],
+          deep_analysis: parsed.deep_analysis,
+          breakdown: parsed.breakdown,
+          annotated_video_url: parsed.annotated_video_url
+        },
+        video_url: videoUrl,
+        mode: 'deep'
+      })
+      return
+    }
+    
+    // Fallback to old format
     const saved = localStorage.getItem('goalieai_result')
     if (saved) {
       setResult(JSON.parse(saved))
@@ -116,6 +138,43 @@ function ResultsContent() {
               </div>
             </div>
 
+            {/* Deep Play Analysis (NEW) */}
+            {data.deep_analysis && (
+              <div className="card" style={{ padding: '24px', marginBottom: '24px', border: '2px solid #8b5cf6' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: '#8b5cf6' }}>
+                  <Zap size={20} />
+                  NHL-Level Deep Analysis
+                </h2>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ fontSize: '14px', color: 'var(--slate-400)', marginBottom: '8px' }}>What Happened</h4>
+                  <p style={{ fontSize: '15px', color: 'var(--slate-200)' }}>{data.deep_analysis.what_happened}</p>
+                </div>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ fontSize: '14px', color: 'var(--slate-400)', marginBottom: '8px' }}>What Could Have Happened</h4>
+                  <p style={{ fontSize: '15px', color: 'var(--slate-200)' }}>{data.deep_analysis.what_could_have_happened}</p>
+                </div>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ fontSize: '14px', color: 'var(--slate-400)', marginBottom: '8px' }}>Goalie Decision Quality</h4>
+                  <p style={{ fontSize: '15px', color: 'var(--slate-200)' }}>{data.deep_analysis.goalie_decision_quality}</p>
+                </div>
+                
+                <div style={{ marginBottom: '20px' }}>
+                  <h4 style={{ fontSize: '14px', color: 'var(--slate-400)', marginBottom: '8px' }}>Skill Development Focus</h4>
+                  <p style={{ fontSize: '15px', color: 'var(--slate-200)' }}>{data.deep_analysis.skill_development_focus}</p>
+                </div>
+                
+                {data.deep_analysis.nhl_comparison && (
+                  <div style={{ padding: '16px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '12px', borderLeft: '4px solid #8b5cf6' }}>
+                    <h4 style={{ fontSize: '14px', color: '#a78bfa', marginBottom: '8px' }}>🏒 NHL Comparison</h4>
+                    <p style={{ fontSize: '15px', color: 'var(--slate-200)' }}>{data.deep_analysis.nhl_comparison}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Drill Recommendations */}
             {data.drill_recommendations?.length > 0 && (
               <div className="card" style={{ padding: '24px' }}>
@@ -143,7 +202,26 @@ function ResultsContent() {
 
           {/* Sidebar */}
           <div>
-            {videoUrl && (
+            {/* Annotated Video */}
+            {data.annotated_video_url && (
+              <div className="card" style={{ padding: '16px', marginBottom: '24px', border: '2px solid #8b5cf6' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Video size={16} style={{ color: '#8b5cf6' }} />
+                  Annotated Analysis
+                </h3>
+                <video 
+                  src={data.annotated_video_url} 
+                  controls 
+                  style={{ width: '100%', borderRadius: '8px' }}
+                />
+                <p style={{ fontSize: '12px', color: 'var(--slate-400)', marginTop: '12px' }}>
+                  Watch the video with AI-drawn overlays showing puck trajectory, goalie positioning, and play options.
+                </p>
+              </div>
+            )}
+
+            {/* Original video (fallback) */}
+            {videoUrl && !data.annotated_video_url && (
               <div className="card" style={{ padding: '16px', marginBottom: '24px' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px' }}>Your Video</h3>
                 <video 
