@@ -62,8 +62,14 @@ export default function UploadPage() {
         body: formData
       })
       
-      if (response.ok) {
-        const result = await response.json()
+      let result
+      try {
+        result = await response.json()
+      } catch (e) {
+        result = { error: 'Invalid response from server' }
+      }
+      
+      if (response.ok && result.success) {
         setUploading(false)
         setProgress(100)
         setAnalyzing(true)
@@ -77,8 +83,8 @@ export default function UploadPage() {
           setComplete(true)
         }, 2000)
       } else {
-        const error = await response.json()
-        alert('Upload failed: ' + (error.error || 'Unknown error'))
+        console.error('Upload failed:', result)
+        alert('Upload failed: ' + (result.error || 'Unknown error'))
         setUploading(false)
         setProgress(0)
       }
