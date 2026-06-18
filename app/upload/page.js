@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Upload, Check, X, Play, Video, ArrowRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -28,6 +28,18 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [error, setError] = useState(null)
+  
+  // Check auth on mount
+  useEffect(() => {
+    const token = localStorage.getItem('goalieai_token')
+    if (!token) {
+      console.log('No token found - user may not be logged in')
+      setError('Please log in first')
+    } else {
+      console.log('Token found:', token.substring(0, 20) + '...')
+    }
+  }, [])
   const [complete, setComplete] = useState(false)
   
   const handleFileSelect = async (e) => {
@@ -108,6 +120,12 @@ export default function UploadPage() {
   return (
     <div style={{minHeight: '100vh'}}>
       <Header />
+      
+      {error && (
+        <div style={{padding: '12px', background: '#ef4444', color: 'white', textAlign: 'center'}}>
+          {error} - <Link href="/dashboard" style={{color: 'white', textDecoration: 'underline'}}>Go to Login</Link>
+        </div>
+      )}
       
       <main style={{padding: '60px 0'}}>
         <div className="container" style={{maxWidth: '700px'}}>
